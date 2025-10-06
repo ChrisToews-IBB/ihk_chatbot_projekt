@@ -2,7 +2,7 @@
     "intents": [
         {
             "tag": "begruessung",
-            "patterns": ["hallo", "guten tag", "hi", "servus"],
+            "patterns": ["hallo", "guten tag", "hi", "servus", "hey", "moin", "hello"],
             "responses": ["Guten Tag! Willkommen beim Swoppen Support. Wie kann ich Ihnen helfen?", "Hallo! Worum geht es heute?"]
         },
         {

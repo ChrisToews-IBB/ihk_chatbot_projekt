@@ -13,10 +13,10 @@ def load_faq_data(file_path='data/faq.json'):
             return json.load(f)
     except FileNotFoundError:
         print(f"FEHLER: Die Datei {file_path} wurde nicht gefunden.")
-        return {"intents: []"}
+        return {"intents": []}
     
 # Daten einmal beim Start der App laden
-faq_data = load_faq_data
+faq_data = load_faq_data()
 
 @app.route("/")
 def home():
