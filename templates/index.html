@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Support Chatbot - IHK Projekt</title>
+    </head>
+<body>
+    <h1>Willkommen beim Swoppen Systems Support-Chatbot!</h1>
+    
+    <div id="chat-fenster" style="border: 1px solid #ccc; height: 300px; padding: 10px;">
+        <p>Bot: Hallo! Wie kann ich Ihnen heute helfen?</p>
+    </div>
+    
+    <input type="text" id="benutzer-eingabe" placeholder="Ihre Frage eingeben...">
+    <button onclick="sendeNachricht()">Senden</button>
+
+    <script>
+        function sendeNachricht() {
+            const eingabeFeld = document.getElementById('benutzer-eingabe');
+            const nachricht = eingabeFeld.value;
+            
+            if (nachricht.trim() !== "") {
+                // Nur zur Demonstration: Nachricht anzeigen
+                const chatFenster = document.getElementById('chat-fenster');
+                chatFenster.innerHTML += '<p>Sie: ' + nachricht + '</p>';
+                
+                // Eingabefeld leeren
+                eingabeFeld.value = '';
+
+                // HIER WIRD SPÄTER DER BOT AUFGERUFEN (MIT JAVASCRIPT/AJAX)
+                console.log("Nachricht gesendet: " + nachricht);
+            }
+        }
+    </script>
+</body>
+</html>

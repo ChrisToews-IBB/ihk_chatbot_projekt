@@ -1,0 +1,15 @@
+{
+    "intents": [
+        {
+            "tag": "begruessung",
+            "patterns": ["hallo", "guten tag", "hi", "servus"],
+            "responses": ["Guten Tag! Willkommen beim Swoppen Support. Wie kann ich Ihnen helfen?", "Hallo! Worum geht es heute?"]
+        },
+        {
+            "tag": "passwort_zuruecksetzen",
+            "patterns": ["passwort vergessen", "login funktioniert nicht", "passwort zurücksetzen", "pw vergessen"],
+            "responses": ["Kein Problem. Bitte klicken Sie auf der Anmeldeseite auf 'Passwort vergessen'. Sie erhalten umgehend eine E-Mail mit einem Link zum Zurücksetzen.", "Das Passwort können Sie über den Link 'Passwort vergessen' unter dem Login-Feld neu festlegen."],
+            "related_links": ["https://services.swoppen.com/de/hilfe/authentifizierung/benutzernamepasswort-vergessen.html"]
+        }
+    ]
+}

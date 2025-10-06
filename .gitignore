@@ -1,0 +1,25 @@
+# Python-spezifische Dateien/Ordner ignorieren
+
+# 1. Die virtuelle Umgebung (venv)
+# Diese ist auf jedem Rechner anders und kann mit 'pip install -r requirements.txt' neu erstellt werden.
+venv/
+.venv/
+
+# 2. Python-Cache-Dateien
+# Werden automatisch von Python erstellt und sind unnötig auf GitHub.
+__pycache__/
+*.pyc
+*.pyo
+
+# 3. Datenbank- oder lokale Speicherdump-Dateien
+# Wir simulieren unsere Ticket-Datenbank mit einer JSON-Datei, die NICHT in das Repository soll.
+# Die Datei faq.json soll hingegen MIT HOCHGELADEN werden, da sie Teil der Logik ist.
+data/tickets.json 
+
+# 4. Entwicklungsumgebungs-spezifische Ordner
+# Enthält lokale Einstellungen für VS Code, die nicht geteilt werden müssen.
+.vscode/
+
+# 5. System-spezifische Dateien (von macOS oder Windows)
+.DS_Store
+Thumbs.db
