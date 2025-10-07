@@ -23,35 +23,54 @@ def home():
     # Diese Route liefert die HTML-Oberfläche
     return render_template("index.html")
 
+# Route 2: Chatbot-API (verarbeitet Anfragen und liefert Antworten)
 @app.route("/get_response", methods=["POST"])
 def get_chatbot_response():
+    """Verarbeitet die Benutzernachricht und gibt eine Bot-Antwort zurück."""
+    
     # 1. Benutzer-Nachricht aus dem POST-Request extrahieren
-    user_message = request.json.get("message").lower()
-
-    # 2. Beste Antwort finden
+    user_message = request.json.get("message", "").lower()
+    
+    # Der Zähler für aufeinanderfolgende unbekannte Nachrichten (von 0 bis 2)
+    unknown_count = request.json.get("unknown_count", 0) 
+    
+    # Wir erlauben 3 Versuche (Zähler 0, 1, 2)
+    MAX_REPHRASE_COUNT = 2 
+    
     best_match = None
-
-    # Durch alle Intents (Themen) in der FAQ-Datenbank iterieren
+    
+    # Durchsuche die FAQ-Datenbank
     for intent in faq_data.get("intents", []):
-        # Überprüfen, ob eines der Keywords (patterns) in der Benutzernachricht enthalten ist
         for pattern in intent["patterns"]:
-            # Wir machen hier einen einfachen Vergleich: Ist das Pattern Teil der Nachricht?
             if pattern in user_message:
                 best_match = intent
-                break # Das erste gefundene Pattern reicht aus
+                break 
         if best_match:
             break
 
-    # 3. Antwort generieren
+    # 2. Antwort generieren
     if best_match:
-        # Eine zufällige Antwort aus der Responses-Liste auswählen
+        # Erfolg: Passende FAQ-Antwort senden
         response = random.choice(best_match["responses"])
-
-        # Das Senden von JSON-Daten ist der Schlüssel zur Kommunikation
         return jsonify({"status": "success", "response": response})
+        
+    elif unknown_count < MAX_REPHRASE_COUNT:
+        # STUFE 1: Soft-Fallback (Versuche 1 und 2)
+        # Wir bitten um Umformulierung.
+        soft_fallback_message = "Das habe ich leider nicht verstanden. Könnten Sie Ihre Frage bitte anders formulieren?".format(unknown_count + 1, MAX_REPHRASE_COUNT + 1)
+        return jsonify({
+            "status": "rephrase", 
+            "response": soft_fallback_message
+        })
+        
     else:
-        # Kein Intent gefunden, hier erfolgt später der Fallback zur Ticket-Erstellung
-        return jsonify({"status": "unrecognized", "response": "Entschuldigung, ich habe dieses Anliegen nicht verstanden. Möchten Sie, dass ich ein Support-Ticket für Sie erstelle?"})
+        # STUFE 2: Hard-Fallback (Versuch 3)
+        # Jetzt bieten wir das Ticket an.
+        hard_fallback_message = "Entschuldigung, ich verstehe das Anliegen immer noch nicht. Möchten Sie, dass ich ein Support-Ticket für Sie erstelle?"
+        return jsonify({
+            "status": "unrecognized", 
+            "response": hard_fallback_message
+        })
 
 if __name__ == "__main__":
     # Startet den Flask-Server
