@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Bestätigung</title>
+    <style>
+        /* CSS für die Bestätigungsseite, abgestimmt auf den Chatbot-Stil */
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; text-align: center; }
+        .confirmation-box { background-color: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); padding: 40px; width: 100%; max-width: 450px; }
+        .icon { font-size: 3em; color: #28a745; margin-bottom: 20px; }
+        h1 { color: #007bff; margin-top: 0; }
+        .ticket-id { font-size: 1.5em; font-weight: bold; color: #343a40; background-color: #d1e7dd; padding: 10px; border-radius: 6px; display: inline-block; margin-top: 15px; }
+        .details p { margin: 5px 0; color: #6c757d; }
+        .back-link { display: inline-block; margin-top: 30px; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 6px; transition: background-color 0.2s; }
+        .back-link:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="confirmation-box">
+    <!-- Ein Häkchen-Symbol zur Bestätigung (simuliert, da wir keine Font Awesome haben) -->
+    <div class="icon">✓</div>
+    <h1>Anfrage erfolgreich delegiert!</h1>
+    
+    <p>Vielen Dank für Ihre Geduld. Da der Chatbot Ihre Frage nicht lösen konnte, wurde ein Support-Ticket für Sie erstellt.</p>
+    
+    <p class="ticket-id">{{ ticket_id }}</p>
+
+    <div class="details">
+        <p><strong>Status:</strong> Offen (Simuliert)</p>
+        <p><strong>Angenommenes Anliegen:</strong> "{{ ticket_details.description | default('Nicht erfasst') }}"</p>
+    </div>
+
+    <a href="/" class="back-link">Zum Chatbot zurückkehren</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const style = document.createElement('link');
+        style.rel = 'stylesheet';
+        style.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap';
+        document.head.appendChild(style);
+    });
+</script>
+
+</body>
+</html>
