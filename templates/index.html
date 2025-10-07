@@ -4,176 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swoppen Support Chatbot</title>
-    <style>
-        /* Einfaches, klares CSS für das IHK-Projekt */
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .chat-container { background-color: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 100%; max-width: 500px; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-header { background-color: #0452a5; color: white; padding: 15px; text-align: center; font-size: 1.25em; border-top-left-radius: 12px; border-top-right-radius: 12px; }
-        #chat-fenster { padding: 15px; height: 400px; overflow-y: auto; background-color: #e9ecef; border-bottom: 1px solid #dee2e6; }
-        .user, .bot { margin-bottom: 10px; padding: 8px 12px; border-radius: 8px; max-width: 85%; }
-        .user { background-color: #d1e7dd; margin-left: auto; text-align: right; }
-        .bot { background-color: #ffffff; margin-right: auto; text-align: left; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
-        .input-area { display: flex; padding: 10px; background-color: #ffffff; }
-        #benutzer-eingabe { flex-grow: 1; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; margin-right: 10px; font-size: 1em; }
-        #senden-button { background-color: #024388; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
-        #senden-button:hover { background-color: #0056b3; }
-        
-        /* Styling für den Ticket-Button */
-        .ticket-action { text-align: center; padding: 10px 0; background-color: #ffffff; }
-        .ticket-button { background-color: #ffc107; color: #343a40; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: background-color 0.2s; }
-        .ticket-button:hover { background-color: #e0a800; }
-    </style>
+    <!-- Verlinkung zur ausgelagerten CSS-Datei im static/css/ Ordner -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="chat-header">
-        Swoppen Chat Support
+    <div class="chat-container">
+        <div class="chat-header">
+            Swoppen Support Chatbot
+        </div>
+        
+        <!-- Chat-Fenster -->
+        <div id="chat-fenster">
+            <p class="bot"><strong>Bot:</strong> Guten Tag! Ich bin der Swoppen Support Chatbot. Wie kann ich Ihnen bei Ihrem Anliegen behilflich sein?</p>
+        </div>
+
+        <!-- Eingabebereich -->
+        <div class="input-area">
+            <input type="text" id="benutzer-eingabe" placeholder="Ihre Nachricht eingeben..." autofocus>
+            <button id="sende-button">Senden</button>
+        </div>
     </div>
-    <div id="chat-fenster">
-        <p class="bot"><strong>Bot:</strong> Guten Tag! Willkommen beim Swoppen Support. Wie kann ich Ihnen helfen?</p>
-    </div>
-    <div class="input-area">
-        <input type="text" id="benutzer-eingabe" placeholder="Ihre Nachricht...">
-        <button id="senden-button" onclick="sendeNachricht()">Senden</button>
-    </div>
-</div>
 
-<script>
-    // Globale Variable, um die letzte unerkannte Nachricht zu speichern.
-    let letzteUnbekannteNachricht = '';
-    
-    // NEU: Zähler für aufeinanderfolgende unbekannte Nachrichten (0 bis 2)
-    let unknownMessageCount = 0; 
+    <!-- Verlinkung zur ausgelagerten JS-Datei im static/js/ Ordner -->
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 
-    async function sendeNachricht() {
-        const eingabeFeld = document.getElementById('benutzer-eingabe');
-        const nachricht = eingabeFeld.value;
-        
-        if (nachricht.trim() === "") {
-            return; 
-        }
-        
-        zeigeNachricht('Sie', nachricht, 'user');
-        eingabeFeld.value = ''; 
-
-        // Verstecke alle alten Ticket-Buttons, bevor eine neue Nachricht gesendet wird
-        document.querySelectorAll('.ticket-action').forEach(el => el.remove());
-
-        // 1. Payload anpassen: Senden des aktuellen Zählers an das Backend
-        const payload = { 
-            message: nachricht,
-            unknown_count: unknownMessageCount // Sendet den aktuellen Wert (0, 1, 2)
-        };
-        
-        try {
-            const response = await fetch('/get_response', {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload) 
-            });
-
-            const data = await response.json();
-            
-            // 2. Zustand basierend auf der Antwort des Bots aktualisieren
-            if (data.status === 'success') {
-                zeigeNachricht('Bot', data.response, 'bot');
-                unknownMessageCount = 0; // Bei Erfolg Zähler zurücksetzen
-
-            } else if (data.status === 'rephrase') {
-                // STUFE 1: Bot bittet um Umformulierung
-                zeigeNachricht('Bot', data.response, 'bot');
-                letzteUnbekannteNachricht = nachricht;
-                unknownMessageCount++; // Zähler für den nächsten Versuch erhöhen
-
-            } else if (data.status === 'unrecognized') {
-                // STUFE 2: Ticket-Angebot (Hard-Fallback)
-                zeigeNachricht('Bot', data.response, 'bot');
-                letzteUnbekannteNachricht = nachricht;
-                unknownMessageCount = 0; // Zähler zurücksetzen (Gespräch abgeschlossen)
-                zeigeTicketButton(); // Den Button zum Erstellen des Tickets anzeigen
-
-            } else {
-                zeigeNachricht('Bot', 'Ein Fehler ist aufgetreten.', 'bot');
-                letzteUnbekannteNachricht = '';
-                unknownMessageCount = 0;
-            }
-
-        } catch (error) {
-            console.error('Fehler bei der Kommunikation mit dem Server:', error);
-            zeigeNachricht('Bot', 'Fehler: Konnte keine Verbindung zum Server herstellen.', 'bot');
-        }
-    }
-    
-    // Hilfsfunktionen (unverändert)
-    function zeigeNachricht(sender, text, type) {
-        const chatFenster = document.getElementById('chat-fenster');
-        const nachrichtElement = document.createElement('p');
-        nachrichtElement.classList.add(type); 
-        nachrichtElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
-        
-        chatFenster.appendChild(nachrichtElement);
-        chatFenster.scrollTop = chatFenster.scrollHeight;
-    }
-
-    function zeigeTicketButton() {
-        const chatFenster = document.getElementById('chat-fenster');
-        const actionDiv = document.createElement('div');
-        actionDiv.classList.add('ticket-action');
-        
-        const button = document.createElement('button');
-        button.classList.add('ticket-button');
-        button.textContent = 'Ja, Ticket erstellen';
-        button.onclick = createTicket;
-        
-        actionDiv.appendChild(button);
-        chatFenster.appendChild(actionDiv);
-        chatFenster.scrollTop = chatFenster.scrollHeight;
-    }
-    
-    async function createTicket() {
-        document.querySelector('.ticket-button').disabled = true;
-        
-        const ticketData = {
-            description: letzteUnbekannteNachricht || "Unbekanntes Anliegen",
-            user: "Max Mustermann (simuliert)" 
-        };
-
-        zeigeNachricht('Bot', 'Ticket-Erstellung wird vorbereitet...', 'bot');
-        
-        try {
-            const response = await fetch('/create_ticket', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(ticketData)
-            });
-
-            const data = await response.json();
-            
-            if (data.status === 'ticket_created') {
-                window.location.href = `/ticket?id=${data.ticket_id}`;
-            } else {
-                zeigeNachricht('Bot', `Fehler beim Erstellen des Tickets: ${data.message}`, 'bot');
-            }
-
-        } catch (error) {
-            console.error('Fehler beim Ticket-Request:', error);
-            zeigeNachricht('Bot', 'Kritischer Fehler: Konnte Ticket-Server nicht erreichen.', 'bot');
-        }
-    }
-
-    document.getElementById('benutzer-eingabe').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendeNachricht();
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const style = document.createElement('link');
-        style.rel = 'stylesheet';
-        style.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap';
-        document.head.appendChild(style);
-    });
-</script>
 </body>
 </html>

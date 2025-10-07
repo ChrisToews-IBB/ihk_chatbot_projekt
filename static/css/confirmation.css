@@ -1,0 +1,67 @@
+/* Styling für die Ticket Bestätigungsseite */
+
+/* Import der Hauptschriftart für Konsistenz */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f4f7f6; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    margin: 0; 
+    text-align: center; 
+}
+.confirmation-box { 
+    background-color: white; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+    padding: 40px; 
+    width: 100%; 
+    max-width: 450px; 
+}
+.icon { 
+    font-size: 3em; 
+    color: #28a745; /* Grün für Erfolg */
+    margin-bottom: 20px; 
+}
+h1 { 
+    color: #007bff; 
+    margin-top: 0; 
+}
+.ticket-id { 
+    font-size: 1.5em; 
+    font-weight: bold; 
+    color: #343a40; 
+    background-color: #d1e7dd; /* Helles Grün */
+    padding: 10px; 
+    border-radius: 6px; 
+    display: inline-block; 
+    margin-top: 15px; 
+}
+.details p { 
+    margin: 5px 0; 
+    color: #6c757d; 
+}
+.description-box {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 6px;
+    text-align: left;
+}
+.back-link { 
+    display: inline-block; 
+    margin-top: 30px; 
+    padding: 10px 20px; 
+    background-color: #007bff; 
+    color: white; 
+    text-decoration: none; 
+    border-radius: 6px; 
+    transition: background-color 0.2s; 
+}
+.back-link:hover { 
+    background-color: #0056b3; 
+}
