@@ -41,13 +41,13 @@
 "message": "Wählen Sie bitte, welche Art von Anpassung der Rechnung notwendig ist:",
 "next_steps": [
 {"id": "billing_correction", "text": "Korrektur einer bereits erstellten Rechnung"},
-{"id": "billing_cancellation", "text": "Stornierung der gesamten Rechnung"},
+{"id": "billing_cancellation", "text": "Stornierung der gesamten Rechnung oder Stornokosten"},
 {"id": "billing_general_query", "text": "Allgemeine Fragen zur Rechnungsstellung"}
 ]
 },
 "billing_correction": {
 "id": "billing_correction",
-"message": "Für eine Korrekturrechnung benötigen wir die ursprüngliche Rechnungsnummer und eine genaue Angabe, welche Posten, Preise oder Kundendaten angepasst werden müssen. Bitte verwenden Sie hierfür die Funktion 'Rechnungsänderung' im Soferu-Modul 'Finanzen'.",
+"message": "Eine Korrekturrechnung dient zur Berichtigung einer vorhandenen, bereits verbuchten Rechnung. Sie korrigiert Fehler (Posten, Preise, etc.), ersetzt die ursprüngliche Rechnung aber nicht komplett.\n\nNutzen Sie hierfür die Funktion 'Rechnungsänderung' im Soferu-Modul 'Finanzen'. Eine detaillierte Anleitung finden Sie hier: <a href='https://services.swoppen.com/de/hilfe/verkauf/korrekturrechnung-erstellen.html' target='_blank' class='text-soferu-blue underline hover:text-blue-700'>Korrekturrechnung erstellen</a>.",
 "solution": "Anleitung zur Erstellung einer Korrekturrechnung.",
 "next_steps": [
 {"id": "issue_resolved", "text": "Das Problem ist gelöst"},
@@ -56,8 +56,8 @@
 },
 "billing_cancellation": {
 "id": "billing_cancellation",
-"message": "Eine vollständige Stornierung ist nur möglich, wenn die Rechnung noch nicht verbucht wurde. Sollte dies der Fall sein, nutzen Sie die Funktion 'Rechnungsstorno' im Finanzmodul. Wenn die Rechnung bereits verbucht ist, muss zwingend eine Korrekturrechnung erstellt werden (siehe vorheriger Punkt).",
-"solution": "Informationen zur Rechnungsstornierung.",
+"message": "Die Stornorechnung im Sinne einer vollständigen Rechnungskorrektur ist nur möglich, wenn die Rechnung noch nicht verbucht wurde. \n\nAchtung: Im Kontext von Stornierungen, bei denen Kosten (Stornogebühren) auf den Kunden zukommen, wird dies über die Debitoren-Logik abgewickelt. Informationen zur Handhabung von Forderungen (z.B. bei Uneinbringlichkeit) finden Sie hier: <a href='https://services.swoppen.com/de/hilfe/verkauf/korrekturrechnung-erstellen.html#forderunguneinbringlich' target='_blank' class='text-soferu-blue underline hover:text-blue-700'>Umgang mit Forderungen</a>.",
+"solution": "Informationen zur Rechnungsstornierung und Stornokosten.",
 "next_steps": [
 {"id": "issue_resolved", "text": "Das Problem ist gelöst"},
 {"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
@@ -89,6 +89,6 @@
 "id": "issue_unresolved",
 "message": "Es tut uns leid, dass wir Ihr Problem nicht direkt lösen konnten. Bitte erstellen Sie ein Ticket. Ein Mitarbeiter wird sich in Kürze bei Ihnen melden.",
 "action": "show_ticket_form",
-"subject_hint": "Supportanfrage zur Rechnungsstellung"
+"subject_hint": "Allgemeine Supportanfrage"
 }
 }
