@@ -4,37 +4,24 @@
 "message": "Willkommen beim Soferu Support-Bot der Swoppen Systems GmbH. Bitte wählen Sie ein Hauptthema, um Ihr Problem zu lösen.",
 "next_steps": [
 {"id": "login", "text": "Probleme mit der Anmeldung (Passwort, Benutzername)"},
-{"id": "billing", "text": "Fragen zur Rechnungsstellung und Korrekturen"},
-{"id": "reporting", "text": "Fragen zu Berichten oder Datenexport"},
-{"id": "installation", "text": "Installation und Updates der Soferu-Software"}
+{"id": "billing", "text": "Fragen zur Rechnungsstellung und Korrekturen"}
 ]
 },
 "login": {
 "id": "login",
 "message": "Welche Art von Anmeldeproblem liegt vor?",
 "next_steps": [
-{"id": "login_forgot_password", "text": "Ich habe mein Passwort vergessen"},
-{"id": "login_username_unknown", "text": "Ich kenne meinen Benutzernamen nicht"},
-{"id": "login_locked", "text": "Mein Konto ist gesperrt"}
+{"id": "login_forgot_password", "text": "Ich habe mein Passwort vergessen"}
 ]
 },
 "login_forgot_password": {
-"id": "login_forgot_password",
-"message": "Um Ihr Passwort zurückzusetzen, gehen Sie bitte auf die Haupt-Login-Seite und klicken Sie auf 'Passwort vergessen'. Folgen Sie den Anweisungen in der E-Mail, die Sie erhalten. Wichtig: Prüfen Sie auch Ihren Spam-Ordner.",
-"solution": "Anleitung zum Zurücksetzen des Passworts.",
-"next_steps": [
-{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
-{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
-]
-},
-"login_locked": {
-"id": "login_locked",
-"message": "Kontosperrungen erfolgen meist nach 5 fehlerhaften Anmeldeversuchen. Warten Sie bitte 15 Minuten. Sollte das Problem weiterhin bestehen, wenden Sie sich bitte an Ihren lokalen Administrator.",
-"solution": "Informationen zur Kontosperrung und Wartezeit.",
-"next_steps": [
-{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
-{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
-]
+    "id": "login_forgot_password",
+    "message": "Um Ihr Passwort zurückzusetzen, nutzen Sie bitte unser dediziertes Formular:\n\n<a href='https://services.swoppen.com/de/login/passwort-vergessen/' target='_blank' class='text-soferu-blue underline hover:text-blue-700'>Hier geht's zur Seite 'Passwort vergessen'</a>\n\n**Wichtig:** Prüfen Sie nach dem Absenden des Formulars auch Ihren Spam-Ordner auf die E-Mail zum Zurücksetzen.",
+    "solution": "Direkter Link und Anleitung zum Zurücksetzen des Passworts.",
+    "next_steps": [
+        {"id": "issue_resolved", "text": "Das Problem ist gelöst"},
+        {"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
+    ]
 },
 "billing": {
 "id": "billing",
@@ -58,23 +45,6 @@
 "id": "billing_cancellation",
 "message": "Die Stornorechnung im Sinne einer vollständigen Rechnungskorrektur ist nur möglich, wenn die Rechnung noch nicht verbucht wurde. \n\nAchtung: Im Kontext von Stornierungen, bei denen Kosten (Stornogebühren) auf den Kunden zukommen, wird dies über die Debitoren-Logik abgewickelt. Informationen zur Handhabung von Forderungen (z.B. bei Uneinbringlichkeit) finden Sie hier: <a href='https://services.swoppen.com/de/hilfe/verkauf/korrekturrechnung-erstellen.html#forderunguneinbringlich' target='_blank' class='text-soferu-blue underline hover:text-blue-700'>Umgang mit Forderungen</a>.",
 "solution": "Informationen zur Rechnungsstornierung und Stornokosten.",
-"next_steps": [
-{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
-{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
-]
-},
-"reporting": {
-"id": "reporting",
-"message": "Geht es um einen spezifischen Fehler in einem Bericht oder um eine generelle Anleitung?",
-"next_steps": [
-{"id": "reporting_export_fail", "text": "Der Datenexport schlägt fehl"},
-{"id": "reporting_guide", "text": "Ich benötige eine Anleitung zum Erstellen eines neuen Berichts"}
-]
-},
-"reporting_export_fail": {
-"id": "reporting_export_fail",
-"message": "Bitte stellen Sie sicher, dass Sie die neueste Version von Soferu verwenden und dass Ihr Browser (Chrome/Firefox) auf dem neuesten Stand ist. Ein Export von zu großen Datenmengen kann ebenfalls zu einem Timeout führen. Versuchen Sie, den Zeitraum einzuschränken.",
-"solution": "Checkliste bei fehlgeschlagenem Datenexport.",
 "next_steps": [
 {"id": "issue_resolved", "text": "Das Problem ist gelöst"},
 {"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
