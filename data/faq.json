@@ -1,15 +1,94 @@
 {
-    "intents": [
-        {
-            "tag": "begruessung",
-            "patterns": ["hallo", "guten tag", "hi", "servus", "hey", "moin", "hello"],
-            "responses": ["Guten Tag! Willkommen beim Swoppen Support. Wie kann ich Ihnen helfen?", "Hallo! Worum geht es heute?"]
-        },
-        {
-            "tag": "passwort_zuruecksetzen",
-            "patterns": ["passwort vergessen", "login funktioniert nicht", "passwort zurücksetzen", "pw vergessen"],
-            "responses": ["Kein Problem. Bitte klicken Sie auf der Anmeldeseite auf 'Passwort vergessen'. Sie erhalten umgehend eine E-Mail mit einem Link zum Zurücksetzen.", "Das Passwort können Sie über den Link 'Passwort vergessen' unter dem Login-Feld neu festlegen."],
-            "related_links": ["https://services.swoppen.com/de/hilfe/authentifizierung/benutzernamepasswort-vergessen.html"]
-        }
-    ]
+"start": {
+"id": "start",
+"message": "Willkommen beim Soferu Support-Bot der Swoppen Systems GmbH. Bitte wählen Sie ein Hauptthema, um Ihr Problem zu lösen.",
+"next_steps": [
+{"id": "login", "text": "Probleme mit der Anmeldung (Passwort, Benutzername)"},
+{"id": "billing", "text": "Fragen zur Rechnungsstellung und Korrekturen"},
+{"id": "reporting", "text": "Fragen zu Berichten oder Datenexport"},
+{"id": "installation", "text": "Installation und Updates der Soferu-Software"}
+]
+},
+"login": {
+"id": "login",
+"message": "Welche Art von Anmeldeproblem liegt vor?",
+"next_steps": [
+{"id": "login_forgot_password", "text": "Ich habe mein Passwort vergessen"},
+{"id": "login_username_unknown", "text": "Ich kenne meinen Benutzernamen nicht"},
+{"id": "login_locked", "text": "Mein Konto ist gesperrt"}
+]
+},
+"login_forgot_password": {
+"id": "login_forgot_password",
+"message": "Um Ihr Passwort zurückzusetzen, gehen Sie bitte auf die Haupt-Login-Seite und klicken Sie auf 'Passwort vergessen'. Folgen Sie den Anweisungen in der E-Mail, die Sie erhalten. Wichtig: Prüfen Sie auch Ihren Spam-Ordner.",
+"solution": "Anleitung zum Zurücksetzen des Passworts.",
+"next_steps": [
+{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
+{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
+]
+},
+"login_locked": {
+"id": "login_locked",
+"message": "Kontosperrungen erfolgen meist nach 5 fehlerhaften Anmeldeversuchen. Warten Sie bitte 15 Minuten. Sollte das Problem weiterhin bestehen, wenden Sie sich bitte an Ihren lokalen Administrator.",
+"solution": "Informationen zur Kontosperrung und Wartezeit.",
+"next_steps": [
+{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
+{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
+]
+},
+"billing": {
+"id": "billing",
+"message": "Wählen Sie bitte, welche Art von Anpassung der Rechnung notwendig ist:",
+"next_steps": [
+{"id": "billing_correction", "text": "Korrektur einer bereits erstellten Rechnung"},
+{"id": "billing_cancellation", "text": "Stornierung der gesamten Rechnung"},
+{"id": "billing_general_query", "text": "Allgemeine Fragen zur Rechnungsstellung"}
+]
+},
+"billing_correction": {
+"id": "billing_correction",
+"message": "Für eine Korrekturrechnung benötigen wir die ursprüngliche Rechnungsnummer und eine genaue Angabe, welche Posten, Preise oder Kundendaten angepasst werden müssen. Bitte verwenden Sie hierfür die Funktion 'Rechnungsänderung' im Soferu-Modul 'Finanzen'.",
+"solution": "Anleitung zur Erstellung einer Korrekturrechnung.",
+"next_steps": [
+{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
+{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
+]
+},
+"billing_cancellation": {
+"id": "billing_cancellation",
+"message": "Eine vollständige Stornierung ist nur möglich, wenn die Rechnung noch nicht verbucht wurde. Sollte dies der Fall sein, nutzen Sie die Funktion 'Rechnungsstorno' im Finanzmodul. Wenn die Rechnung bereits verbucht ist, muss zwingend eine Korrekturrechnung erstellt werden (siehe vorheriger Punkt).",
+"solution": "Informationen zur Rechnungsstornierung.",
+"next_steps": [
+{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
+{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
+]
+},
+"reporting": {
+"id": "reporting",
+"message": "Geht es um einen spezifischen Fehler in einem Bericht oder um eine generelle Anleitung?",
+"next_steps": [
+{"id": "reporting_export_fail", "text": "Der Datenexport schlägt fehl"},
+{"id": "reporting_guide", "text": "Ich benötige eine Anleitung zum Erstellen eines neuen Berichts"}
+]
+},
+"reporting_export_fail": {
+"id": "reporting_export_fail",
+"message": "Bitte stellen Sie sicher, dass Sie die neueste Version von Soferu verwenden und dass Ihr Browser (Chrome/Firefox) auf dem neuesten Stand ist. Ein Export von zu großen Datenmengen kann ebenfalls zu einem Timeout führen. Versuchen Sie, den Zeitraum einzuschränken.",
+"solution": "Checkliste bei fehlgeschlagenem Datenexport.",
+"next_steps": [
+{"id": "issue_resolved", "text": "Das Problem ist gelöst"},
+{"id": "issue_unresolved", "text": "Das Problem besteht weiterhin (Ticket erstellen)"}
+]
+},
+"issue_resolved": {
+"id": "issue_resolved",
+"message": "Das freut uns sehr! Wir wünschen Ihnen weiterhin viel Erfolg mit Soferu.",
+"action": "chat_complete"
+},
+"issue_unresolved": {
+"id": "issue_unresolved",
+"message": "Es tut uns leid, dass wir Ihr Problem nicht direkt lösen konnten. Bitte erstellen Sie ein Ticket. Ein Mitarbeiter wird sich in Kürze bei Ihnen melden.",
+"action": "show_ticket_form",
+"subject_hint": "Supportanfrage zur Rechnungsstellung"
+}
 }

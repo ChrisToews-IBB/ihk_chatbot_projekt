@@ -1,137 +1,266 @@
-// JavaScript-Logik für den Chatbot
+// chat.js - Logik für die Chatbot-Interaktion und das UI-Handling
+// ---------------------------------------------------------------------
 
-// Zähler für unverstandene Nachrichten. Wird im Frontend geführt und an das Backend gesendet.
-let unknownMessageCount = 0;
+// --- Globale Variablen und DOM-Elemente ---
+const chatContainer = document.getElementById('chatbot-container');
+const toggleButton = document.getElementById('chatbot-toggle-button');
+const chatLog = document.getElementById('chat-log');
+const optionsContainer = document.getElementById('options-container');
+const ticketFormContainer = document.getElementById('ticket-form-container');
+const ticketForm = document.getElementById('ticket-form');
 
-// Die Hauptfunktion, die die Benutzernachricht an den Flask-Server sendet
-async function sendeNachricht() {
-    const eingabeFeld = document.getElementById('benutzer-eingabe');
-    const nachricht = eingabeFeld.value.trim();
-    
-    // 1. Eingabe prüfen
-    if (nachricht === "") {
-        return; 
-    }
-    
-    // 2. Nachricht des Benutzers im Chat-Fenster anzeigen
-    zeigeNachricht('Sie', nachricht, 'user');
-    eingabeFeld.value = ''; // Eingabefeld leeren
-    
-    // 3. AJAX-Aufruf (fetch) an das Flask-Backend
-    try {
-        const response = await fetch('/get_response', {
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            // Die Nachricht und der Zähler werden als JSON an Flask gesendet
-            body: JSON.stringify({ 
-                message: nachricht,
-                unknown_count: unknownMessageCount // Aktuellen Zählerstand senden
-            }) 
-        });
+// API-Endpunkte
+const CHAT_API_URL = '/api/chat';
+const TICKET_API_URL = '/api/submit_ticket';
 
-        // 4. Antwort vom Server (JSON) verarbeiten
-        const data = await response.json();
+// Speichert den Verlauf des aktuellen Gesprächs (für zukünftige Nutzung, z.B. Ticket-Betreff)
+let conversationHistory = [];
 
-        // 5. Antwort des Bots und Logik verarbeiten
-        if (data.status === 'success') {
-            // FAQ gefunden: Zähler zurücksetzen
-            unknownMessageCount = 0;
-            zeigeNachricht('Bot', data.response, 'bot');
-        } else if (data.status === 'rephrase') {
-            // Soft-Fallback: Bot bittet um Umformulierung.
-            unknownMessageCount = data.new_count; // Zähler erhöhen
-            zeigeNachricht('Bot', data.response, 'bot');
-        } else if (data.status === 'unrecognized') {
-            // Hard-Fallback: Ticket anbieten.
-            unknownMessageCount = 0; // Zähler zurücksetzen
-            
-            // Bot-Antwort anzeigen
-            zeigeNachricht('Bot', data.response, 'bot');
 
-            // Button zum Chat-Fenster hinzufügen
-            const chatFenster = document.getElementById('chat-fenster');
-            const buttonWrapper = document.createElement('div');
-            buttonWrapper.classList.add('bot'); // Damit der Button rechts angezeigt wird
-            
-            const ticketButton = document.createElement('button');
-            ticketButton.textContent = 'Ja, Ticket erstellen';
-            ticketButton.classList.add('fallback-button');
-            ticketButton.onclick = () => createTicket(nachricht); // Die letzte unbekannte Nachricht übergeben
-            
-            buttonWrapper.appendChild(ticketButton);
-            chatFenster.appendChild(buttonWrapper);
-            
+// --- UI-Funktionen ---
+
+function toggleChatbot() {
+    /**
+     * Schaltet zwischen minimiertem und maximiertem Zustand des Chatbots um.
+     * Nutzt die 'hidden' Klasse von Tailwind CSS.
+     */
+    const isHidden = chatContainer.classList.contains('hidden');
+
+    if (isHidden) {
+        // Chatbot öffnen
+        chatContainer.classList.remove('hidden');
+        // Icon des Toggle-Buttons verstecken, da das Chat-Fenster sichtbar ist
+        toggleButton.classList.add('hidden');
+        
+        // Beim Öffnen: Startnachricht oder Fortsetzung des Chats laden
+        // Wenn der ChatLog leer ist, starten wir die Konversation
+        if (chatLog.children.length <= 1) { 
+            // Führe den ersten Schritt aus ('start' ID ist in index.html definiert)
+            sendMessage(START_CHAT_ID); 
         } else {
-            zeigeNachricht('Bot', 'Ein Fehler ist aufgetreten.', 'bot');
+             // Stelle sicher, dass der Chat nach unten scrollt
+            scrollToBottom();
         }
 
-    } catch (error) {
-        console.error('Fehler bei der Kommunikation mit dem Server:', error);
-        zeigeNachricht('Bot', 'Fehler: Konnte keine Verbindung zum Server herstellen.', 'bot');
+    } else {
+        // Chatbot minimieren
+        chatContainer.classList.add('hidden');
+        toggleButton.classList.remove('hidden');
     }
-
-    // Scrolle ans Ende, nachdem alle Elemente hinzugefügt wurden
-    document.getElementById('chat-fenster').scrollTop = document.getElementById('chat-fenster').scrollHeight;
 }
 
-// Hilfsfunktion, um Nachrichten dem Chat-Fenster hinzuzufügen
-function zeigeNachricht(sender, text, type) {
-    // Entfernt den vorherigen Ticket-Button, falls vorhanden
-    const oldButton = document.querySelector('.fallback-button');
-    if (oldButton) {
-        oldButton.closest('.bot').remove(); // Entfernt den Button-Wrapper
-    }
-    
-    const chatFenster = document.getElementById('chat-fenster');
-    const nachrichtElement = document.createElement('p');
-    nachrichtElement.classList.add(type); 
-    nachrichtElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
-    
-    chatFenster.appendChild(nachrichtElement);
+function displayBotMessage(message) {
+    /**
+     * Fügt eine neue Nachricht des Bots zum Chat-Verlauf hinzu.
+     */
+    const messageElement = document.createElement('div');
+    messageElement.className = 'flex justify-start';
+    messageElement.innerHTML = `
+        <div class="bg-white p-3 rounded-xl shadow max-w-[80%] animate-in fade-in duration-300">
+            <p class="text-sm font-semibold text-soferu-blue">Bot</p>
+            <p class="text-gray-800">${message}</p>
+        </div>
+    `;
+    chatLog.appendChild(messageElement);
+    scrollToBottom();
 }
 
-// Funktion zur Behandlung der Ticket-Erstellung (Hard-Fallback)
-async function createTicket(problemDescription) {
-    // Kurze Rückmeldung im Chat
-    zeigeNachricht('Bot', 'Erstelle Ticket...', 'bot');
+function displayUserChoice(text) {
+    /**
+     * Fügt die Auswahl des Benutzers zum Chat-Verlauf hinzu.
+     */
+    const choiceElement = document.createElement('div');
+    choiceElement.className = 'flex justify-end';
+    choiceElement.innerHTML = `
+        <div class="bg-soferu-blue text-white p-3 rounded-xl shadow max-w-[80%] animate-in fade-in duration-300">
+            <p>${text}</p>
+        </div>
+    `;
+    chatLog.appendChild(choiceElement);
+    scrollToBottom();
+}
+
+function displayOptions(options) {
+    /**
+     * Zeigt die klickbaren Optionen (nächste Schritte) an.
+     */
+    optionsContainer.innerHTML = ''; // Vorherige Optionen leeren
+
+    if (options.length === 0) {
+        // Wenn keine Optionen vorhanden sind, zeige nur den Neustart-Button
+        optionsContainer.innerHTML = `
+            <button onclick="sendMessage('start')" class="w-full py-2 px-4 rounded-md text-sm font-medium text-white bg-gray-500 hover:bg-gray-600 transition duration-150">
+                Neustart
+            </button>
+        `;
+        return;
+    }
+
+    options.forEach(option => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'w-full py-2 px-4 border border-soferu-blue rounded-lg text-sm font-medium text-soferu-blue bg-soferu-light hover:bg-soferu-blue hover:text-white transition duration-150 shadow-md';
+        button.textContent = option.text;
+        
+        // Füge den Event-Listener hinzu: Bei Klick wird die Chat-Interaktion mit der ID gestartet
+        button.onclick = () => {
+            // Zeige die Auswahl des Benutzers an, bevor die API aufgerufen wird
+            displayUserChoice(option.text);
+            
+            // Füge die Auswahl zur Konversationshistorie hinzu
+            conversationHistory.push({ role: 'user', text: option.text, id: option.id });
+            
+            // Sende die ID an den Server
+            sendMessage(option.id);
+        };
+        optionsContainer.appendChild(button);
+    });
+}
+
+function scrollToBottom() {
+    /**
+     * Scrollt den Chat-Verlauf immer zum neuesten Element.
+     */
+    chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+// --- Backend-Kommunikation ---
+
+async function sendMessage(id) {
+    /**
+     * Sendet die ausgewählte ID an den Flask-Server, um die nächste Antwort zu erhalten.
+     * @param {string} id - Die ID der ausgewählten Option aus faq.json.
+     */
+    
+    // Deaktiviere Optionen, während die Antwort vom Server geladen wird
+    optionsContainer.innerHTML = '<p class="text-center text-gray-500">Wird geladen...</p>';
+    hideTicketForm(); // Verstecke das Ticket-Formular
 
     try {
-        const response = await fetch('/create_ticket', {
+        const response = await fetch(CHAT_API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
-                description: problemDescription,
-                user: "Max Mustermann (simuliert)" 
-            })
+            body: JSON.stringify({ id: id }),
         });
 
-        const data = await response.json();
+        const result = await response.json();
 
-        if (data.status === 'ticket_created') {
-            // Erfolgreich: Weiterleitung zur Bestätigungsseite mit der ID
-            window.location.href = `/ticket?id=${data.ticket_id}`;
+        if (result.status === 'success') {
+            
+            // 1. Bot-Antwort anzeigen
+            displayBotMessage(result.message);
+            
+            // 2. Antwort zur Konversationshistorie hinzufügen
+            conversationHistory.push({ role: 'bot', text: result.message, id: id });
+            
+            // 3. Nächste Schritte basierend auf der Server-Antwort verarbeiten
+            
+            if (result.action === 'show_ticket_form') {
+                // Der Server signalisiert, dass das Ticket-Formular angezeigt werden soll
+                showTicketForm(result.subject_hint || 'Unbekanntes Problem');
+            
+            } else if (result.action === 'chat_complete') {
+                // Der Chat ist abgeschlossen (Problem gelöst)
+                optionsContainer.innerHTML = `<p class="text-green-600 font-semibold text-center">Danke für Ihre Nutzung!</p>`;
+                
+            } else {
+                // Normale Chat-Interaktion: Zeige die nächsten Optionen
+                displayOptions(result.next_steps);
+            }
+
         } else {
-            zeigeNachricht('Bot', 'Fehler beim Erstellen des Tickets.', 'bot');
+            displayBotMessage(`Ein Fehler ist aufgetreten: ${result.message}`);
+            displayOptions([{id: 'start', text: 'Neustart versuchen'}]);
         }
+
     } catch (error) {
-        console.error('Fehler bei der Ticket-Erstellung:', error);
-        zeigeNachricht('Bot', 'Interner Fehler: Konnte Ticket-API nicht erreichen.', 'bot');
+        console.error('Fehler beim Abrufen der Chat-Antwort:', error);
+        displayBotMessage('Entschuldigung, es gab ein technisches Problem. Bitte versuchen Sie es später erneut.');
+        displayOptions([{id: 'start', text: 'Neustart versuchen'}]);
     }
 }
 
-// Event-Listener beim Laden der Seite
-document.addEventListener('DOMContentLoaded', function() {
-    // Nachricht senden bei Drücken der Enter-Taste
-    document.getElementById('benutzer-eingabe').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendeNachricht();
-        }
-    });
 
-    // Nachricht senden bei Klick auf den Button
-    document.getElementById('sende-button').addEventListener('click', sendeNachricht);
+// --- Ticket-Formular Logik ---
+
+function showTicketForm(subjectHint) {
+    /**
+     * Blendet das Ticket-Formular ein und setzt den Betreff-Vorschlag.
+     */
+    optionsContainer.classList.add('hidden');
+    ticketFormContainer.classList.remove('hidden');
+    
+    const subjectInput = document.getElementById('ticket-subject');
+    // Setze den Betreff basierend auf der letzten bekannten Problemkategorie
+    subjectInput.value = subjectHint; 
+    
+    // Optional: Füge die gesamte Konversationshistorie in das Beschreibungsfeld ein
+    const descriptionInput = document.getElementById('ticket-description');
+    const historyText = conversationHistory
+        .map(entry => `${entry.role.toUpperCase()}: ${entry.text}`)
+        .join('\n');
+    descriptionInput.value = `Konversationsverlauf:\n---\n${historyText}\n\n--- \nBitte beschreiben Sie das Problem genauer:`;
+    
+    scrollToBottom();
+}
+
+function hideTicketForm() {
+    /**
+     * Versteckt das Ticket-Formular.
+     */
+    optionsContainer.classList.remove('hidden');
+    ticketFormContainer.classList.add('hidden');
+}
+
+
+// Event Listener für die Ticket-Formular-Übermittlung
+ticketForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Verhindert das Standard-Senden des Formulars (Seiten-Reload)
+    
+    // Sammle Formulardaten
+    const subject = document.getElementById('ticket-subject').value;
+    const description = document.getElementById('ticket-description').value;
+    const email = document.getElementById('ticket-email').value;
+    
+    // Sende Lade-Feedback
+    optionsContainer.innerHTML = '';
+    displayBotMessage('Sende Ticket an das Soferu-System...');
+    hideTicketForm();
+
+    try {
+        const response = await fetch(TICKET_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ subject, description, email }),
+        });
+
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            displayBotMessage(result.message); // Zeige die Erfolgsmeldung des Servers
+            
+            // Chat abschließen
+            optionsContainer.innerHTML = `<p class="text-green-600 font-semibold text-center">Vielen Dank für Ihre Anfrage!</p>`;
+        } else {
+            displayBotMessage(`Fehler bei der Ticket-Übermittlung: ${result.message}`);
+            displayOptions([{id: 'start', text: 'Neustart versuchen'}]);
+        }
+
+    } catch (error) {
+        console.error('Fehler bei der Ticket-Übermittlung:', error);
+        displayBotMessage('Entschuldigung, beim Senden des Tickets ist ein Netzwerkfehler aufgetreten.');
+        displayOptions([{id: 'start', text: 'Neustart versuchen'}]);
+    }
+});
+
+
+// Initialisierungs-Logik: Stellt sicher, dass die Icons initialisiert werden
+document.addEventListener('DOMContentLoaded', () => {
+    // Wenn die Seite geladen ist, kann der Benutzer den Chatbot öffnen.
+    // Die toggleChatbot Funktion wird durch Klick auf den Button ausgelöst.
+    console.log('Chatbot-Logik geladen. Bereit für Interaktion.');
 });

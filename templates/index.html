@@ -1,33 +1,114 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+    <!-- Metadaten für Responsive Design und Zeichensatz -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swoppen Support Chatbot</title>
-    <!-- Verlinkung zur ausgelagerten CSS-Datei im static/css/ Ordner -->
+    <title>Soferu Support Chatbot</title>
+    <!-- Import des Tailwind CSS Frameworks für schnelles, mobiles-freundliches Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        /* Konfiguration der Tailwind-Klassen */
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'soferu-blue': '#1c7ed6', /* Eine markante Farbe für das Branding */
+                        'soferu-light': '#e7f5ff',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Import der eigenen Stylesheet-Datei für spezifisches Layout (minimiert/maximiert) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Import der Icons-Bibliothek (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
 
-    <div class="chat-container">
-        <div class="chat-header">
-            Swoppen Support Chatbot
-        </div>
+    <!-- 1. Der Minimierte Chat-Button -->
+    <!-- Dieser Button bleibt immer rechts unten sichtbar, solange der Chatbot minimiert ist. -->
+    <div id="chatbot-toggle-button" class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleChatbot()" class="bg-soferu-blue text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
+            <!-- Icon für den Chat (Sprechblase) -->
+            <i data-lucide="message-square-text" class="w-8 h-8"></i>
+        </button>
+    </div>
+
+    <!-- 2. Das Maximierte Chat-Fenster (Modales Fenster) -->
+    <!-- Dieses Haupt-Container-Element wird per CSS standardmäßig versteckt. -->
+    <div id="chatbot-container" class="hidden fixed bottom-6 right-6 z-40 w-full sm:w-96 h-[85vh] sm:h-[600px]">
         
-        <!-- Chat-Fenster -->
-        <div id="chat-fenster">
-            <p class="bot"><strong>Bot:</strong> Guten Tag! Ich bin der Swoppen Support Chatbot. Wie kann ich Ihnen bei Ihrem Anliegen behilflich sein?</p>
-        </div>
+        <!-- Chat-Kachel (Card) -->
+        <div class="bg-white rounded-xl shadow-2xl flex flex-col h-full border border-gray-200 overflow-hidden">
+            
+            <!-- Header des Chatbots -->
+            <div class="bg-soferu-blue text-white p-4 flex justify-between items-center rounded-t-xl">
+                <h2 class="text-xl font-semibold">Soferu Support-Bot</h2>
+                <!-- Button zum Schließen/Minimieren des Chatbots -->
+                <button onclick="toggleChatbot()" class="p-1 rounded-full hover:bg-blue-700 transition duration-300">
+                    <i data-lucide="minimize" class="w-6 h-6"></i>
+                </button>
+            </div>
 
-        <!-- Eingabebereich -->
-        <div class="input-area">
-            <input type="text" id="benutzer-eingabe" placeholder="Ihre Nachricht eingeben..." autofocus>
-            <button id="sende-button">Senden</button>
+            <!-- Chat-Verlauf Bereich -->
+            <div id="chat-log" class="flex-grow p-4 space-y-4 overflow-y-auto bg-soferu-light/50">
+                <!-- Chat-Nachrichten werden hier von chat.js eingefügt -->
+                
+                <!-- Erste Systemnachricht (Platzhalter) -->
+                <div class="flex justify-start">
+                    <div class="bg-white p-3 rounded-xl shadow max-w-[80%]">
+                        <p class="text-sm font-semibold text-soferu-blue">Bot</p>
+                        <p class="text-gray-800">Hallo! Ich bin der Soferu Support-Bot. Wie kann ich Ihnen heute helfen?</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Interaktions-Bereich für Buttons/Ticket-Formular -->
+            <div id="interaction-area" class="p-4 bg-white border-t border-gray-100">
+                <!-- Buttons/Formular wird dynamisch per chat.js eingefügt -->
+                <div id="options-container" class="space-y-2">
+                    <!-- Option-Buttons werden hier eingefügt -->
+                </div>
+
+                <!-- Formular zur Ticket-Erstellung (standardmäßig versteckt) -->
+                <div id="ticket-form-container" class="hidden">
+                    <h4 class="text-lg font-semibold mb-3 text-red-600">Ticket-Erstellung</h4>
+                    <form id="ticket-form" class="space-y-3">
+                        <div>
+                            <label for="ticket-subject" class="block text-sm font-medium text-gray-700">Betreff:</label>
+                            <input type="text" id="ticket-subject" name="subject" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        </div>
+                        <div>
+                            <label for="ticket-description" class="block text-sm font-medium text-gray-700">Problembeschreibung:</label>
+                            <textarea id="ticket-description" name="description" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"></textarea>
+                        </div>
+                        <div>
+                            <label for="ticket-email" class="block text-sm font-medium text-gray-700">E-Mail für Rückfragen:</label>
+                            <input type="email" id="ticket-email" name="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+                        </div>
+                        <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150">
+                            Ticket einreichen
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
         </div>
     </div>
 
-    <!-- Verlinkung zur ausgelagerten JS-Datei im static/js/ Ordner -->
+    <!-- 3. Import der JavaScript-Logik -->
+    <script>
+        // Setze die Start-ID für den Chatbot, die beim ersten Laden gesendet wird
+        const START_CHAT_ID = 'start';
+    </script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <!-- Initialisiere die Lucide Icons nach dem Laden des DOM -->
+    <script>
+        lucide.createIcons();
+    </script>
 
 </body>
 </html>

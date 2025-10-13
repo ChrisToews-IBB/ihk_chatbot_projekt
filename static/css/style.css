@@ -1,143 +1,62 @@
-/* Allgemeine Stile */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+/* style.css - Spezifische CSS-Regeln für den Chatbot */
+
+/* ------------------------------------------------------------------------- */
+/* 1. Generelles Reset und Body Styling */
+/* ------------------------------------------------------------------------- */
+
+/* Die Schriftart "Inter" wird über Tailwind automatisch verwendet. */
 
 body {
+    /* Stellt sicher, dass die Icons nach dem Laden korrekt dargestellt werden */
     font-family: 'Inter', sans-serif;
-    background-color: #eef2f7;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
 }
 
-/* Chat-Container und Fenster */
-.chat-container {
-    background-color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 450px;
-    display: flex;
-    flex-direction: column;
-    height: 80vh; /* Anpassung für mobile Ansicht */
-    overflow: hidden;
+/* ------------------------------------------------------------------------- */
+/* 2. Styling für den Chat-Container (chatbot-container) */
+/* ------------------------------------------------------------------------- */
+
+#chatbot-container {
+    /* Standard-Desktop-Positionierung (rechts unten) wird durch Tailwind-Klassen (fixed bottom-6 right-6) geregelt */
+    transition: all 0.3s ease-in-out; /* Sanfte Übergänge für Öffnen/Schließen */
 }
 
-.chat-header {
-    background-color: #013975;
-    color: white;
-    padding: 15px;
-    text-align: center;
-    font-size: 1.2em;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Auf mobilen Geräten: Fenster füllt fast den gesamten Bildschirm für bessere Bedienbarkeit */
+@media (max-width: 640px) {
+    #chatbot-container {
+        /* Mobile: Füllt fast den gesamten Viewport, damit Benutzer mehr Platz haben */
+        width: 96%; /* 96% Breite */
+        height: 90vh; /* 90% der Viewport-Höhe */
+        bottom: 2vh; /* Abstand zum Boden */
+        right: 2%; /* Zentrierung durch rechten Abstand */
+        left: 2%; /* Zentrierung durch linken Abstand */
+        max-height: none; /* Deaktiviert die feste Höhenbegrenzung auf Mobile */
+        
+    }
 }
 
-#chat-fenster {
-    flex-grow: 1;
-    padding: 15px;
+/* ------------------------------------------------------------------------- */
+/* 3. Styling für den Chat-Verlauf (chat-log) */
+/* ------------------------------------------------------------------------- */
+
+#chat-log {
+    /* Scroll-Leiste für den Chat-Verlauf stylen */
     overflow-y: auto;
-    background-color: #f8f9fa;
 }
 
-/* Nachrichten-Stile */
-#chat-fenster p {
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
-    max-width: 80%;
-    word-wrap: break-word;
-    line-height: 1.4;
+/* Scrollbalken für Webkit-Browser (Chrome, Safari) */
+#chat-log::-webkit-scrollbar {
+    width: 8px;
 }
 
-.user {
-    background-color: #d1e7dd; /* Light green for user */
-    margin-left: auto !important;
-    text-align: right;
-    border-bottom-right-radius: 2px;
+#chat-log::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }
 
-.bot {
-    background-color: #e9ecef; /* Light gray for bot */
-    margin-right: auto !important;
-    text-align: left;
-    border-bottom-left-radius: 2px;
+#chat-log::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
 }
 
-.bot strong, .user strong {
-    font-weight: 700;
-}
-
-/* Eingabebereich */
-.input-area {
-    display: flex;
-    padding: 15px;
-    border-top: 1px solid #dee2e6;
-    background-color: #ffffff;
-}
-
-#benutzer-eingabe {
-    flex-grow: 1;
-    padding: 10px 15px;
-    border: 1px solid #ced4da;
-    border-radius: 20px;
-    margin-right: 10px;
-    font-size: 1em;
-    transition: border-color 0.2s;
-}
-
-#benutzer-eingabe:focus {
-    outline: none;
-    border-color: #013975;
-}
-
-#sende-button {
-    background-color: #013975;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    font-weight: 600;
-}
-
-#sende-button:hover {
-    background-color: #013975;
-}
-
-#sende-button:active {
-    transform: scale(0.98);
-}
-
-/* Fallback / Ticket-Button-Stil */
-.fallback-button {
-    display: block;
-    width: 100%;
-    background-color: #ffc107;
-    color: #343a40;
-    border: none;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-
-.fallback-button:hover {
-    background-color: #e0a800;
-}
-
-/* Mobile Optimierung */
-@media (max-width: 600px) {
-    .chat-container {
-        height: 95vh;
-        border-radius: 0;
-    }
-    .chat-header {
-        border-radius: 0;
-    }
+#chat-log::-webkit-scrollbar-thumb:hover {
+    background: #999;
 }
