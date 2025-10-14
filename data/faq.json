@@ -28,8 +28,7 @@
 "message": "Wählen Sie bitte, welche Art von Anpassung der Rechnung notwendig ist:",
 "next_steps": [
 {"id": "billing_correction", "text": "Korrektur einer bereits erstellten Rechnung"},
-{"id": "billing_cancellation", "text": "Stornierung der gesamten Rechnung oder Stornokosten"},
-{"id": "billing_general_query", "text": "Allgemeine Fragen zur Rechnungsstellung"}
+{"id": "billing_cancellation", "text": "Stornierung der gesamten Rechnung oder Stornokosten"}
 ]
 },
 "billing_correction": {
