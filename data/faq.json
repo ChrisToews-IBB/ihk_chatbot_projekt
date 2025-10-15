@@ -1,7 +1,7 @@
 {
 "start": {
 "id": "start",
-"message": "Willkommen beim Soferu Support-Bot der Swoppen Systems GmbH. Bitte wählen Sie ein Hauptthema, um Ihr Problem zu lösen.",
+"message": "Willkommen beim Support-Bot der Swoppen Systems GmbH. Bitte wählen Sie ein Hauptthema, um Ihr Problem zu lösen.",
 "next_steps": [
 {"id": "login", "text": "Probleme mit der Anmeldung (Passwort, Benutzername)"},
 {"id": "billing", "text": "Fragen zur Rechnungsstellung und Korrekturen"}
