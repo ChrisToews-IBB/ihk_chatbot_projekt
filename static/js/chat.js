@@ -258,6 +258,37 @@ ticketForm.addEventListener('submit', async (e) => {
 });
 
 
+// Event-Handler: Zurück zum Start
+document.addEventListener('DOMContentLoaded', () => {
+    const btnRestart = document.getElementById('btn-restart');
+    if (btnRestart) {
+        btnRestart.addEventListener('click', async () => {
+            try {
+                // Anfrage an die Chat-API mit id 'start'
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: 'start' })
+                });
+                const data = await res.json();
+
+                // Nutze vorhandene Rendering-Funktion — passe den Namen an, falls nötig.
+                // z.B. renderChatResponse(data) oder handleBotResponse(data)
+                if (typeof renderChatResponse === 'function') {
+                    renderChatResponse(data);
+                } else if (typeof handleBotResponse === 'function') {
+                    handleBotResponse(data);
+                } else {
+                    // Minimal-Fallback: zeige Nachricht im Console-Log
+                    console.log('Start-Antwort:', data);
+                }
+            } catch (err) {
+                console.error('Fehler beim Zurücksetzen auf Start:', err);
+            }
+        });
+    }
+});
+
 // Initialisierungs-Logik: Stellt sicher, dass die Icons initialisiert werden
 document.addEventListener('DOMContentLoaded', () => {
     // Wenn die Seite geladen ist, kann der Benutzer den Chatbot öffnen.
