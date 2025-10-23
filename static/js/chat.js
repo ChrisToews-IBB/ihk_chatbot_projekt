@@ -15,7 +15,7 @@ const TICKET_API_URL = '/api/submit_ticket';
 
 // Speichert den Verlauf des aktuellen Gesprächs (für zukünftige Nutzung, z.B. Ticket-Betreff)
 let conversationHistory = [];
-
+let chatStarted = false;
 
 // --- UI-Funktionen ---
 
@@ -34,9 +34,10 @@ function toggleChatbot() {
         
         // Beim Öffnen: Startnachricht oder Fortsetzung des Chats laden
         // Wenn der ChatLog leer ist, starten wir die Konversation
-        if (chatLog.children.length <= 1) { 
+        if (!chatStarted) { 
             // Führe den ersten Schritt aus ('start' ID ist in index.html definiert)
-            sendMessage(START_CHAT_ID); 
+            sendMessage(START_CHAT_ID);
+            chatStarted = true;
         } else {
              // Stelle sicher, dass der Chat nach unten scrollt
             scrollToBottom();
@@ -163,7 +164,10 @@ async function sendMessage(id) {
             
             } else if (result.action === 'chat_complete') {
                 // Der Chat ist abgeschlossen (Problem gelöst)
-                optionsContainer.innerHTML = `<p class="text-green-600 font-semibold text-center">Danke für Ihre Nutzung!</p>`;
+                optionsContainer.innerHTML = `
+                <p class="text-green-600 font-semibold text-center">Danke für Ihre Nutzung!</p>
+                <button onclick="sendMessage('start')" class="w-full mt-2 py-2 px-4 rounded-md bg-soferu-blue text-white hover:bg-blue-700 transition">Neu starten</button>
+                `;
                 
             } else {
                 // Normale Chat-Interaktion: Zeige die nächsten Optionen
@@ -244,7 +248,10 @@ ticketForm.addEventListener('submit', async (e) => {
             displayBotMessage(result.message); // Zeige die Erfolgsmeldung des Servers
             
             // Chat abschließen
-            optionsContainer.innerHTML = `<p class="text-green-600 font-semibold text-center">Vielen Dank für Ihre Anfrage!</p>`;
+            optionsContainer.innerHTML = `
+            <p class="text-green-600 font-semibold text-center">Vielen Dank für Ihre Anfrage!</p>
+            <button onclick="sendMessage('start')" class="w-full mt-2 py-2 px-4 rounded-md bg-soferu-blue text-white hover:bg-blue-700 transition">Neu starten</button>
+            `;
         } else {
             displayBotMessage(`Fehler bei der Ticket-Übermittlung: ${result.message}`);
             displayOptions([{id: 'start', text: 'Neustart versuchen'}]);
